@@ -2,8 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<meta name="viewport"
-	content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
 <title>3D - Building Map</title>
 
 <style>
@@ -13,86 +12,111 @@ html, body, #viewDiv {
 	height: 100%;
 	width: 100%;
 }
-
 </style>
 
-<link rel="stylesheet"
-	href="https://js.arcgis.com/4.29/esri/themes/light/main.css" />
+<link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css" />
 <script src="https://js.arcgis.com/4.29/"></script>
 
 <script>
-        require([
-            "esri/Map",
-            "esri/views/SceneView",
-            "esri/layers/GeoJSONLayer",
-            "esri/layers/SceneLayer", "esri/layers/GraphicsLayer", "esri/Graphic", "esri/request"
-        ], function (Map, SceneView, GeoJSONLayer, SceneLayer,
-                     GraphicsLayer, Graphic, esriRequest) {
-        	var createGraphic = function(data) {
-    			return new Graphic({
-    				geometry : data,
-    				symbol : data.symbol,
-    				attributes : data,
-    				popupTemplate : data.popupTemplate
-    			});
-    		};
-    		
-    		const json_options = {
-    				query : {
-    					f : "json"
-    				},
-    				responseType : "json"
-    			};
-			// request json
-			esriRequest('./data.json', json_options).then(function(response) {
-				var graphicsLayer = new GraphicsLayer();
-				console.log(response);
-				response.data.forEach(function(data){
-					graphicsLayer.add(createGraphic(data));
-				});
-				map.add(graphicsLayer);
+require([
+	"esri/Map",
+	"esri/views/SceneView",
+	"esri/layers/GeoJSONLayer",
+	"esri/layers/SceneLayer",
+	"esri/layers/GraphicsLayer",
+	"esri/Graphic",
+	"esri/request"
+], function(Map, SceneView, GeoJSONLayer, SceneLayer, GraphicsLayer, Graphic, esriRequest) {
+	
+	// Tạo graphic từ data.json
+	var createGraphic = function(data) {
+		return new Graphic({
+			geometry: data,
+			symbol: data.symbol,
+			attributes: data,
+			popupTemplate: data.popupTemplate
+		});
+	};
+	
+	const json_options = {
+		query: { f: "json" },
+		responseType: "json"
+	};
 
-			});
-			// geojson layer
-			const geojsonLayer = new GeoJSONLayer({
-				url: "./ToaDo3D.geojson"
-			});
-			
-			geojsonLayer.renderer = {
-				type: "simple",
-				symbol: {
-					type: "polygon-3d",
-					symbolLayers: [
-						{
-							type: "extrude",
-							size: 100,
-							material: {
-								color: "#7eadf7"
-							}
-						}
-					]
+	const graphicsLayer = new GraphicsLayer();
+
+	// Tải data.json nếu có
+	esriRequest('./data.json', json_options).then(function(response) {
+		console.log(response);
+		response.data.forEach(function(data){
+			graphicsLayer.add(createGraphic(data));
+		});
+		map.add(graphicsLayer);
+	});
+
+	// Layer từ polygon_height.geojson
+	const geojsonLayer = new GeoJSONLayer({
+		url: "./polygon_height.geojson",
+		renderer: {
+			type: "simple",
+			symbol: {
+				type: "polygon-3d",
+				symbolLayers: [
+					{
+						type: "extrude",
+						size: 10,
+						material: { color: "#7eadf7" }
+					}
+				]
+			}
+		}
+	});
+
+	// Layer từ Test_final.geojson với base_height
+	const extra1GeojsonLayer = new GeoJSONLayer({
+		url: "./Test_final.geojson",
+		renderer: {
+		  type: "simple",
+		  symbol: {
+			type: "polygon-3d",
+			symbolLayers: [
+			  {
+				type: "extrude",
+				size: 2, // Chiều cao đùn của đối tượng
+				material: {
+				  color: "#FF2009" // Màu sắc của đối tượng
 				}
-			};            
-			const map = new Map({
-                basemap: "topo-vector",
-                ground: "world-elevation",
-                layers: [geojsonLayer] //end layers
-            });
+			  }
+			]
+		  }
+		},
+		elevationInfo: {
+		  mode: "absolute-height", // Đặt độ cao tuyệt đối
+		  offset: 7 // Tăng thêm 50m độ cao từ mặt đất
+		},
+		title: "Sketched geometries"
+	  });
 
-            const view = new SceneView({
-                container: "viewDiv",
-                map: map,
-                camera: {
-                    position: [105.834518, 21.0266829, 300],
-                    heading: 0,
-                    tilt: 75
-                }
-            });
+	// Tạo bản đồ và thêm cả 2 lớp
+	const map = new Map({
+		basemap: "topo-vector",
+		ground: "world-elevation",
+		layers: [geojsonLayer, extra1GeojsonLayer]
+	});
 
-            view.popup.defaultPopupTemplateEnabled = true;
-        });
+	const view = new SceneView({
+		container: "viewDiv",
+		map: map,
+		camera: {
+			position: [105.834518, 21.0266829, 300],
+			heading: 0,
+			tilt: 75
+		}
+	});
 
-    </script>
+	view.popup.defaultPopupTemplateEnabled = true;
+});
+</script>
 </head>
 
 <body>
