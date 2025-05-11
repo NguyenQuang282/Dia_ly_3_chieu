@@ -54,8 +54,8 @@ require([
 		map.add(graphicsLayer);
 	});
 
-	const geojsonLayer = new GeoJSONLayer({
-		url: "./Than_lang.geojson",
+	const Lang_chinh = new GeoJSONLayer({
+		url: "./Than_lang_1.geojson",
 		renderer: {
 			type: "simple",
 			symbol: {
@@ -64,12 +64,40 @@ require([
 					{
 						type: "extrude",
 						size: 10,
-						material: { color: "#7eadf7" }
+						material: { color: "#989993" }
 					}
 				]
 			}
-		}
+		},
+		elevationInfo: {
+		  mode: "absolute-height", 
+		  offset: -2
+		},
 	});
+	const Than_lang = new GeoJSONLayer({
+		url: "./Than_lang_2.geojson",
+		renderer: {
+			type: "simple",
+			symbol: {
+				type: "polygon-3d",
+				symbolLayers: [
+					{
+						type: "extrude",
+						size: 9,
+						material: {
+							color: "#564A47"
+						}
+					}
+				]
+			}
+		},
+		elevationInfo: {
+			mode: "absolute-height",
+			offset: 0
+		},
+		title: "Sketched geometries"
+	});
+
 
 	const Mai_nha_1 = new GeoJSONLayer({
 		url: "./Mai_1.geojson",
@@ -82,7 +110,7 @@ require([
 				type: "extrude",
 				size: 2,
 				material: {
-				  color: "#FF2009" 
+				  color: "#989993" 
 				}
 			  }
 			]
@@ -90,7 +118,7 @@ require([
 		},
 		elevationInfo: {
 		  mode: "absolute-height", 
-		  offset: 6.5
+		  offset: 5
 		},
 		title: "Sketched geometries"
 	  });
@@ -98,19 +126,19 @@ require([
 	const map = new Map({
 		basemap: "topo-vector",
 		ground: "world-elevation",
-		layers: [geojsonLayer, Mai_nha_1]
+		layers: [Lang_chinh, Mai_nha_1, Than_lang]
 	});
 
 	const view = new SceneView({
 		container: "viewDiv",
 		map: map,
 		camera: {
-			position: [105.834518, 21.0266829, 300],
-			heading: 0,
-			tilt: 75
+			position: [105.836210, 21.038490, 100],
+			heading: 220,
+			tilt: 70
 		}
 	});
-
+	
 	view.popup.defaultPopupTemplateEnabled = true;
 });
 </script>
