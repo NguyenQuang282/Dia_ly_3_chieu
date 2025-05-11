@@ -54,9 +54,8 @@ require([
 		map.add(graphicsLayer);
 	});
 
-	// Layer từ polygon_height.geojson
 	const geojsonLayer = new GeoJSONLayer({
-		url: "./polygon_height.geojson",
+		url: "./Than_lang.geojson",
 		renderer: {
 			type: "simple",
 			symbol: {
@@ -72,8 +71,8 @@ require([
 		}
 	});
 
-	// Layer từ Test_final.geojson với base_height
-		url: "./Test_final.geojson",
+	const Mai_nha_1 = new GeoJSONLayer({
+		url: "./Mai_1.geojson",
 		renderer: {
 		  type: "simple",
 		  symbol: {
@@ -81,23 +80,25 @@ require([
 			symbolLayers: [
 			  {
 				type: "extrude",
+				size: 2,
 				material: {
-				  color: "#FF2009" // Màu sắc của đối tượng
+				  color: "#FF2009" 
 				}
 			  }
 			]
 		  }
 		},
 		elevationInfo: {
-		  mode: "absolute-height", // Đặt độ cao tuyệt đối
+		  mode: "absolute-height", 
+		  offset: 6.5
 		},
 		title: "Sketched geometries"
 	  });
 
-	// Tạo bản đồ và thêm cả 2 lớp
 	const map = new Map({
 		basemap: "topo-vector",
 		ground: "world-elevation",
+		layers: [geojsonLayer, Mai_nha_1]
 	});
 
 	const view = new SceneView({
